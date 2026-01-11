@@ -239,6 +239,37 @@ h3 {
   color: var(--muted-text);
 }
 
+.hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--button-bg);
+  color: #fff;
+  padding: 1rem 2rem;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  margin-top: 2rem;
+  border: 2px solid var(--button-bg);
+}
+
+.hero-btn:hover {
+  background-color: transparent;
+  color: var(--button-bg);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px var(--shadow);
+}
+
+.hero-btn i {
+  transition: transform 0.3s ease;
+}
+
+.hero-btn:hover i {
+  transform: translateX(5px);
+}
+
 .hero-image {
   flex: 1;
   position: relative;
@@ -251,28 +282,46 @@ h3 {
 .hero-image img {
   max-width: 100%;
   height: auto;
-  border-radius: 10px;
-  box-shadow: 0 10px 30px var(--shadow);
   position: relative;
   z-index: 2;
 }
 
-.hero-image::before {
-  content: '';
+.hero-bg {
   position: absolute;
   top: -20%;
   left: -20%;
-  width: 140%;
-  height: 140%;
-  background: radial-gradient(circle, rgba(77, 166, 255, 0.1) 0%, transparent 70%);
+  width: 120%;
+  height: 120%;
+  background: 
+    radial-gradient(ellipse at center, rgba(77, 166, 255, 0.4) 0%, transparent 60%),
+    radial-gradient(ellipse at 30% 30%, rgba(138, 197, 255, 0.3) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 70%, rgba(216, 235, 255, 0.2) 0%, transparent 70%);
+  border: 3px solid rgba(77, 166, 255, 0.6);
   border-radius: 50%;
   z-index: 1;
-  animation: float 6s ease-in-out infinite;
+  animation: float 8s ease-in-out infinite, glow 4s ease-in-out infinite alternate;
+  box-shadow: 
+    0 0 60px rgba(77, 166, 255, 0.4),
+    inset 0 0 60px rgba(138, 197, 255, 0.3),
+    0 0 20px rgba(77, 166, 255, 0.8) inset;
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(5deg); }
+  0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
+  50% { transform: translateY(-30px) rotate(10deg) scale(1.05); }
+}
+
+@keyframes glow {
+  0% { 
+    box-shadow: 
+      0 0 50px rgba(77, 166, 255, 0.3),
+      inset 0 0 50px rgba(138, 197, 255, 0.2);
+  }
+  100% { 
+    box-shadow: 
+      0 0 80px rgba(77, 166, 255, 0.5),
+      inset 0 0 80px rgba(138, 197, 255, 0.4);
+  }
 }
 
 /* Mobile Hero Styles */
@@ -295,6 +344,12 @@ h3 {
 
   .hero-content p {
     font-size: 1rem;
+  }
+
+  .hero-btn {
+    font-size: 1rem;
+    padding: 0.8rem 1.5rem;
+    margin-top: 1.5rem;
   }
 
   .hero-image {
