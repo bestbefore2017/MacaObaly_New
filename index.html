@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MácaObaly.cz - Víčka, obaly a sklenice, jihočeská tradice</title>
+    <meta name="description" content="Víčka, obaly a sklenice od tradičního českého výrobce s více než 25 lety zkušeností. Kvalitní produkty pro vaše potřeby.">
+    <meta name="keywords" content="víčka, obaly, sklenice,tradiční, kvalitní produkty">
+    <meta name="author" content="René Máca">
+    <link rel="icon" href="https://maca-obaly.cz/wp-content/uploads/2023/11/cropped-obaly_web_icon-32x32.png" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dark"> 
+<div class="navigation">
+    <input type="checkbox" id="nav-toggle" class="nav-toggle">
+    <label for="nav-toggle" class="nav-toggle-label">
+        <span></span>
+        <span></span>
+        <span></span>
+    </label>
+    <div class="logo">
+        <a href="index.html"><span class="site-title">MácaObaly.cz</span></a>
+    </div>
+    <ul class="nav-links">
+        <li><a href="index.html">Domů</a></li>
+        <li><a href="products.html">Produkty</a></li>
+        <li><a href="about.html">O nás</a></li>
+        <li><a href="contact.html">Kontakt</a></li>
+
+   
+        <li><a href="tel:+420123456789" class="mobile-cta">+420 123 456 789</a></li>
+        <li><button id="theme-toggle-mobile" class="theme-toggle-mobile"><i class="fas fa-sun"></i></button></li>
+    </ul>
+    <div class="nav-links-right">
+    <a href="tel:+420123456789" class="cta-button">+420 123 456 789</a>
+    <button id="theme-toggle" class="theme-toggle"><i class="fas fa-sun"></i></button>
+</div>
+</div>
+<div class="hero-section">
+    <div class="hero-content">
+        <h1>Vítejte na MácaObaly.cz</h1>
+        <p>Víčka, obaly a sklenice s jihočeskou tradicí</p>
+    </div>
+    <div class="hero-image">
+        <img src="hero-image.jpg" alt="Víčka, obaly a sklenice">
+    </div>
+</div>
+
+<div class="products-section">  
+    <h2>Naše produkty</h2>
+    <div class="product-card">
+        <img src="product1.jpg" alt="Produkt 1">
+        <h3>Víčka na sklenice</h3>
+        <p>Kvalitní víčka pro různé typy sklenic.</p>
+    </div>
+    <div class="product-card">
+        <img src="product2.jpg" alt="Produkt 2">
+        <h3>Sklenice na potraviny</h3>
+        <p>Tradiční české sklenice pro uchování vašich potravin.</p>
+    </div>
+    <div class="product-card">
+        <img src="product3.jpg" alt="Produkt 3">
+        <h3>Obaly na potraviny</h3>
+        <p>Praktické a ekologické obaly pro vaše potřeby.</p>
+    </div>
+</body>
+<script>
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleMobile = document.getElementById('theme-toggle-mobile');
+    const body = document.body;
+
+    const toggleTheme = () => {
+        body.classList.toggle('dark');
+        const isDark = body.classList.contains('dark');
+        const icon = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        if (themeToggle) themeToggle.innerHTML = icon;
+        if (themeToggleMobile) themeToggleMobile.innerHTML = icon;
+    };
+
+    if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
+    if (themeToggleMobile) themeToggleMobile.addEventListener('click', toggleTheme);
+</script>
+</html>
