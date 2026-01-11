@@ -95,6 +95,8 @@ window.addEventListener('scroll', () => {
     const scrolled = window.pageYOffset;
     const heroImage = document.querySelector('.hero-image img');
     const heroBg = document.querySelector('.hero-bg');
+    const navigation = document.querySelector('.navigation');
+    
     if (heroImage) {
         const xMove = scrolled * -0.1; // subtle left-right movement
         const yMove = scrolled * 0.05; // subtle up-down movement
@@ -104,6 +106,11 @@ window.addEventListener('scroll', () => {
         const bgXMove = scrolled * 0.05; // opposite direction for parallax
         const bgYMove = scrolled * -0.03;
         heroBg.style.transform = `translate(${bgXMove}px, ${bgYMove}px)`;
+    }
+    
+    // Make navigation 90% transparent when scrolled
+    if (navigation) {
+        navigation.classList.toggle('scrolled', scrolled > 0);
     }
 });
 </script>
