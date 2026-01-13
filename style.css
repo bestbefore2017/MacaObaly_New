@@ -467,3 +467,235 @@ h3 {
     transform: rotate(45deg) translate(-5px, -6px);
   }
 }
+
+/* Product Categories Section */
+.product-categories-section {
+  padding: 4rem 2rem;
+  background-color: var(--bg-color);
+  text-align: center;
+}
+
+.product-categories-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--text-color);
+}
+
+.section-description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--muted-text);
+  max-width: 1200px;
+  margin: 0 auto 3rem;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.category-card {
+  background-color: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.category-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+}
+
+.category-card img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+}
+
+.category-card h3 {
+  font-size: 1.5rem;
+  padding: 1.5rem;
+  margin: 0;
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+@media (max-width: 960px) {
+  .category-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .category-card img {
+    height: 220px;
+    object-fit: contain;
+  }
+  
+  .section-description {
+    font-size: 1rem;
+    max-width: 100%;
+    padding: 0 1rem;
+    margin: 0 auto 2rem;
+  }
+}
+
+/* Products Section */
+.products-section {
+  padding: 4rem 2rem;
+  background-color: var(--bg-color);
+  text-align: center;
+}
+
+.products-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: var(--text-color);
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.product-card {
+  background-color: var(--card-bg);
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px var(--shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: center;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px var(--shadow);
+}
+
+.product-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+}
+
+.product-card h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+}
+
+.product-card p {
+  color: var(--muted-text);
+  line-height: 1.5;
+}
+
+/* Product Tabs Section */
+.product-tabs-section {
+  padding: 4rem 2rem;
+  background-color: var(--bg-color);
+  text-align: center;
+}
+.product-tabs-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: var(--text-color);
+}
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.tab {
+  background: var(--card-bg);
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 5px 5px 0 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+}
+.tab.active, .tab:hover {
+  background: var(--button-bg);
+  color: #fff;
+}
+.subtabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.subtab {
+  background: var(--card-bg);
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 5px;
+  font-size: 1rem;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+}
+.subtab.active, .subtab:hover {
+  background: var(--button-bg);
+  color: #fff;
+}
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.product-card {
+  background-color: var(--card-bg);
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px var(--shadow);
+  transition: transform 0.3s, box-shadow 0.3s;
+  text-align: center;
+}
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px var(--shadow);
+}
+.product-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+}
+.product-card h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+}
+.product-card p {
+  color: var(--muted-text);
+  line-height: 1.5;
+}
+@media (max-width: 960px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+  .tabs, .subtabs {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  /* Reduce product thumbnails on mobile */
+  .product-card img {
+    height: 220px;
+    object-fit: contain;
+  }
+}
