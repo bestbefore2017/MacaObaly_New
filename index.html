@@ -13,7 +13,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
- </head>
+ <script type="module" src="js/homepage.js"></script>
+</head>
 <body> 
 <div class="navigation">
     <input type="checkbox" id="nav-toggle" class="nav-toggle">
@@ -42,33 +43,21 @@
 </div>
 <div id="home" class="hero-section">
     <div class="hero-content">
-        <h1>Vítejte na MácaObaly.cz</h1>
-        <p>Víčka, obaly a sklenice s jihočeskou tradicí</p>
+        <h1 id="hero-title">Vítejte na MácaObaly.cz</h1>
+        <p id="hero-description">Víčka, obaly a sklenice s jihočeskou tradicí</p>
         <a href="#produkty" class="hero-btn">Naše produkty <i class="fas fa-arrow-right"></i></a>
     </div>
     <div class="hero-image">
         <div class="hero-bg"></div>
-        <img src="images/colage.png" alt="Víčka, obaly a sklenice">
+        <img id="hero-image" src="images/collage.png" alt="Víčka, obaly a sklenice">
     </div>
 </div>
-
 <!-- Product Categories Section -->
 <section id="produkty" class="product-categories-section">
-  <h2>Naše produkty</h2>
-  <p class="section-description">Nabízíme kvalitní víčka na zavařování, sklenice a plechovky od tradičního českého výrobce s více než 25 lety zkušeností. Naše produkty jsou ideální pro domácí konzervaci, včelaře i profesionální použití.</p>
-  <div class="category-grid">
-    <div class="category-card">
-      <img src="images/thumbnail_1.png" alt="Víčka">
-      <h3>Víčka</h3>
-    </div>
-    <div class="category-card">
-      <img src="images/thumbnail_2.png" alt="Sklenice">
-      <h3>Sklenice</h3>
-    </div>
-    <div class="category-card">
-      <img src="images/thumbnail_3.png" alt="Plechovky">
-      <h3>Plechovky</h3>
-    </div>
+  <h2 id="products-section-title">Naše produkty</h2>
+  <p class="section-description" id="products-section-description">Nabízíme kvalitní víčka na zavařování, sklenice a plechovky od tradičního českého výrobce s více než 25 lety zkušeností. Naše produkty jsou ideální pro domácí konzervaci, včelaře i profesionální použití.</p>
+  <div class="category-grid" id="category-grid">
+    <!-- Categories loaded dynamically -->
   </div>
 </section>
 
@@ -76,13 +65,11 @@
 <section id="o-nas" class="about-section">
   <div class="about-container">
     <div class="about-content">
-      <h2>O nás</h2>
-      <p>Jsme tradiční český výrobce s více než 25 lety zkušeností v oboru. Naše firma se specializuje na výrobu kvalitních víček na zavařování, sklenic a plechovek.</p>
-      <p>Díky dlouholeté tradici a neustálému zdokonalování výrobních procesů jsme schopni nabídnout produkty nejvyšší kvality za dostupné ceny. Naše výrobky využívají tisíce spokojených zákazníků po celé České republice.</p>
-      <p>Sídlíme v jižních Čechách, kde kombinujeme tradiční řemeslné postupy s moderními technologiemi. Jsme hrdí na to, že naše produkty slouží k uchování domácích specialit a pomáhají zachovávat české tradice.</p>
+      <h2 id="about-title">O nás</h2>
+      <div id="about-content"></div>
     </div>
     <div class="about-image">
-      <img src="images/maca_warehouse.jpg" alt="O naší firmě">
+      <img id="about-image" src="images/maca_warehouse.jpg" alt="O naší firmě">
     </div>
   </div>
 </section>
@@ -90,23 +77,23 @@
 <!-- Contact Section -->
 <section id="kontakt" class="contact-section">
   <div class="contact-container">
-    <h2>Kontaktujte nás</h2>
-    <p>Máte otázky? Jsme zde pro vás. Kontaktujte nás telefonicky nebo e-mailem.</p>
+    <h2 id="contact-title">Kontaktujte nás</h2>
+    <p id="contact-description">Máte otázky? Jsme zde pro vás. Kontaktujte nás telefonicky nebo e-mailem.</p>
     <div class="contact-grid">
       <div class="contact-card">
         <i class="fas fa-phone"></i>
         <h3>Telefon</h3>
-        <p><a href="tel:+420720670226">+420 720 670 226</a></p>
+        <p><a id="contact-phone-link" href="tel:+420720670226">+420 720 670 226</a></p>
       </div>
       <div class="contact-card">
         <i class="fas fa-envelope"></i>
         <h3>E-mail</h3>
-        <p><a href="mailto:macamilan@email.cz">macamilan@email.cz</a></p>
+        <p><a id="contact-email-link" href="mailto:macamilan@email.cz">macamilan@email.cz</a></p>
       </div>
       <div class="contact-card">
         <i class="fas fa-map-marker-alt"></i>
         <h3>Adresa</h3>
-        <p>Máca Obaly s.r.o.<br>Náměstí Komenského 72<br>Kunžak&nbsp;378 62</p>
+        <p id="contact-address">Máca Obaly s.r.o.<br>Náměstí Komenského 72<br>Kunžak&nbsp;378 62</p>
       </div>
     </div>
   </div>
@@ -139,62 +126,4 @@
   </div>
 </footer>
 </body>
-<script>
-    const themeToggle = document.getElementById('theme-toggle');
-    const themeToggleMobile = document.getElementById('theme-toggle-mobile');
-    const body = document.body;
-
-    // Initialize theme from localStorage (default: light)
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-      body.classList.add('dark');
-    } else {
-      body.classList.remove('dark');
-    }
-    // Set initial icons based on current theme
-    const initIsDark = body.classList.contains('dark');
-    const initIcon = initIsDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-    if (themeToggle) themeToggle.innerHTML = initIcon;
-    if (themeToggleMobile) themeToggleMobile.innerHTML = initIcon;
-
-    const toggleTheme = () => {
-        body.classList.toggle('dark');
-        const isDark = body.classList.contains('dark');
-        const icon = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-        if (themeToggle) themeToggle.innerHTML = icon;
-        if (themeToggleMobile) themeToggleMobile.innerHTML = icon;
-      // Persist preference
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    };
-
-    if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
-    if (themeToggleMobile) themeToggleMobile.addEventListener('click', toggleTheme); 
-    ;
-
-// Scroll animation for hero image
-window.addEventListener('scroll', () => {
-    const scrolled = window.pageYOffset;
-    const heroImage = document.querySelector('.hero-image img');
-    const heroBg = document.querySelector('.hero-bg');
-    const navigation = document.querySelector('.navigation');
-    
-    if (heroImage) {
-        const xMove = scrolled * -0.1; // subtle left-right movement
-        const yMove = scrolled * 0.05; // subtle up-down movement
-        heroImage.style.transform = `translate(${xMove}px, ${yMove}px)`;
-    }
-    if (heroBg) {
-        const bgXMove = scrolled * 0.05; // opposite direction for parallax
-        const bgYMove = scrolled * -0.03;
-        heroBg.style.transform = `translate(${bgXMove}px, ${bgYMove}px)`;
-    }
-    
-    // Make navigation 90% transparent when scrolled
-    if (navigation) {
-        navigation.classList.toggle('scrolled', scrolled > 0);
-    }
-});
-
-</script>
-
 </html>

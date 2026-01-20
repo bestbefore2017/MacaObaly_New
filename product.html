@@ -12,6 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script type="module" src="js/product.js"></script>
 </head>
 <body>
 <!-- Navigation -->
@@ -43,23 +44,17 @@
 <section class="product-detail-section">
     <div class="product-detail-container">
         <div class="product-detail-image">
-            <img src="images/product_detail.jpg" alt="Název produktu">
+            <img id="product-image" src="images/product_detail.jpg" alt="Název produktu">
         </div>
         <div class="product-detail-content">
-            <a href="category.html" class="back-link"><i class="fas fa-arrow-left"></i> Zpět na produkty</a>
-            <h1>Název produktu</h1>
-            <p class="product-price">Od 0,00 Kč</p>
+            <a id="back-to-category" href="category.html" class="back-link"><i class="fas fa-arrow-left"></i> Zpět na produkty</a>
+            <h1 id="product-name">Název produktu</h1>
+            <p class="product-price" id="product-price">Od 0,00 Kč</p>
             <div class="product-specs">
                 <h3>Specifikace</h3>
-                <ul>
-                    <li>Specifikace 1</li>
-                    <li>Specifikace 2</li>
-                    <li>Specifikace 3</li>
-                    <li>Specifikace 4</li>
-                </ul>
+                <div id="product-description"></div>
             </div>
-            <p class="product-description">Detailní popis produktu. Sem vložte úplný a podrobný popis produktu včetně jeho vlastností, využití a výhod. Popis by měl být informativní a přesvědčivý.</p>
-            <button class="inquiry-button"><i class="fas fa-envelope"></i> Dotaz na produkt</button>
+            <button class="inquiry-button" onclick="handleInquiry()"><i class="fas fa-envelope"></i> Dotaz na produkt</button>
         </div>
     </div>
 </section>
@@ -68,7 +63,7 @@
 <section class="product-navigation-section">
     <div class="product-navigation">
         <a href="#" class="nav-arrow prev-product" title="Předchozí produkt"><i class="fas fa-chevron-left"></i></a>
-        <a href="category.html" class="nav-center">Zpět na produkty</a>
+        <a id="nav-back" href="category.html" class="nav-center">Zpět na produkty</a>
         <a href="#" class="nav-arrow next-product" title="Další produkt"><i class="fas fa-chevron-right"></i></a>
     </div>
 </section>
@@ -76,43 +71,8 @@
 <!-- Similar Products Section -->
 <section class="similar-products-section">
     <h2>Podobné produkty</h2>
-    <div class="products-grid">
-        <div class="product-item">
-            <img src="images/thumbnail_1.png" alt="Podobný produkt 1">
-            <h3>Podobný produkt 1</h3>
-            <p>Specifikace produktu</p>
-            <span class="price">Od 0,00 Kč</span>
-        </div>
-        <div class="product-item">
-            <img src="images/thumbnail_1.png" alt="Podobný produkt 2">
-            <h3>Podobný produkt 2</h3>
-            <p>Specifikace produktu</p>
-            <span class="price">Od 0,00 Kč</span>
-        </div>
-        <div class="product-item">
-            <img src="images/thumbnail_1.png" alt="Podobný produkt 3">
-            <h3>Podobný produkt 3</h3>
-            <p>Specifikace produktu</p>
-            <span class="price">Od 0,00 Kč</span>
-        </div>
-        <div class="product-item">
-            <img src="images/thumbnail_1.png" alt="Podobný produkt 4">
-            <h3>Podobný produkt 4</h3>
-            <p>Specifikace produktu</p>
-            <span class="price">Od 0,00 Kč</span>
-        </div>
-        <div class="product-item">
-            <img src="images/thumbnail_1.png" alt="Podobný produkt 5">
-            <h3>Podobný produkt 5</h3>
-            <p>Specifikace produktu</p>
-            <span class="price">Od 0,00 Kč</span>
-        </div>
-        <div class="product-item">
-            <img src="images/thumbnail_1.png" alt="Podobný produkt 6">
-            <h3>Podobný produkt 6</h3>
-            <p>Specifikace produktu</p>
-            <span class="price">Od 0,00 Kč</span>
-        </div>
+    <div class="products-grid" id="similar-products">
+        <!-- Similar products loaded dynamically -->
     </div>
 </section>
 
@@ -142,46 +102,7 @@
         <p>&copy; 2026 MácaObaly.cz. Všechna práva vyhrazena.</p>
     </div>
 </footer>
-
-<script>
-    const themeToggle = document.getElementById('theme-toggle');
-    const themeToggleMobile = document.getElementById('theme-toggle-mobile');
-    const body = document.body;
-
-    // Initialize theme from localStorage (default: light)
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-        body.classList.add('dark');
-    } else {
-        body.classList.remove('dark');
-    }
-    // Set initial icons based on current theme
-    const initIsDark = body.classList.contains('dark');
-    const initIcon = initIsDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-    if (themeToggle) themeToggle.innerHTML = initIcon;
-    if (themeToggleMobile) themeToggleMobile.innerHTML = initIcon;
-
-    const toggleTheme = () => {
-        body.classList.toggle('dark');
-        const isDark = body.classList.contains('dark');
-        const icon = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-        if (themeToggle) themeToggle.innerHTML = icon;
-        if (themeToggleMobile) themeToggleMobile.innerHTML = icon;
-        // Persist preference
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    };
-
-    if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
-    if (themeToggleMobile) themeToggleMobile.addEventListener('click', toggleTheme);
-
-    // Scroll animation for navigation
-    window.addEventListener('scroll', () => {
-        const scrolled = window.pageYOffset;
-        const navigation = document.querySelector('.navigation');
-        if (navigation) {
-            navigation.classList.toggle('scrolled', scrolled > 0);
-        }
-    });
-</script>
+</body>
+</html>
 </body>
 </html>
