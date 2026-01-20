@@ -119,7 +119,7 @@ async function loadCategoryPage() {
     const filterHTML = `
       <button class="filter-btn active" data-subcat="all">
         <i class="fas fa-list"></i>
-        Všechny produkty
+        Vše
       </button>
       ${allSubcategories.map(sub => {
         const icon = sub.content.icon && sub.content.icon.filename 
@@ -171,33 +171,27 @@ function renderProductsPage() {
   let productsToDisplay = allCategoryProducts;
   
   if (selectedSubcategory) {
-    console.log('Filtering by subcategory:', selectedSubcategory);
+    console.log('Filtering by subcategory slug:', selectedSubcategory);
+    
+    // Find the UUID of the selected subcategory
+    const selectedSubcat = allSubcategories.find(sub => sub.slug === selectedSubcategory);
+    const selectedSubcatUuid = selectedSubcat?.uuid;
+    
+    console.log('Selected subcat UUID:', selectedSubcatUuid);
+    
     productsToDisplay = allCategoryProducts.filter(product => {
-      const subcatRef = product.content.subcategory;
+      const productSubcategoryUuid = product.content.subcategory;
       
-      if (!subcatRef) {
-        console.log(`Product ${product.slug}: no subcategory`);
+      if (!productSubcategoryUuid) {
+        console.log(`Product ${product.slug}: no subcategory UUID`);
         return false;
       }
       
-      // subcatRef could be array or single object
-      const refs = Array.isArray(subcatRef) ? subcatRef : [subcatRef];
+      const matches = productSubcategoryUuid === selectedSubcatUuid;
       
-      console.log(`Product ${product.slug}: refs =`, refs);
-      
-      // Check if any ref matches selected subcategory
-      const matches = refs.some(ref => {
-        if (!ref) return false;
-        
-        // Try different ways to match the slug
-        const refSlug = ref.slug || ref.full_slug || '';
-        console.log(`  - checking ref slug="${refSlug}" against "${selectedSubcategory}"`);
-        
-        // Match if slug ends with selected or equals selected
-        return refSlug.endsWith(selectedSubcategory) || 
-               refSlug === selectedSubcategory ||
-               refSlug === `subcategories/${selectedSubcategory}`;
-      });
+      if (matches) {
+        console.log(`Product ${product.slug} matches subcategory ${selectedSubcategory}`);
+      }
       
       return matches;
     });
