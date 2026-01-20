@@ -1,12 +1,32 @@
 import { initTheme, initScrollAnimation } from './shared.js';
 import { getCategory, getAllSubcategories, getAllProducts, richtextToHtml } from './storyblok.js';
 
+// Helper to fetch categories
+async function getCategories() {
+  try {
+    const url = new URL('https://api.storyblok.com/v1/cdn/stories');
+    url.searchParams.append('token', 'VdLWwVoZVAbmH4X3E93rhwtt');
+    url.searchParams.append('version', 'draft');
+    url.searchParams.append('starts_with', 'categories/');
+    url.searchParams.append('per_page', '100');
+    
+    const response = await fetch(url.toString());
+    if (!response.ok) throw new Error(`API Error: ${response.status}`);
+    const data = await response.json();
+    return data.stories || [];
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    return [];
+  }
+}
+
 // ========== STATE ==========
 let allCategoryProducts = [];
 let allSubcategories = [];
 let currentPage = 1;
 const PRODUCTS_PER_PAGE = 9;
 let selectedSubcategory = null; // null = all
+let currentCategory = null; // Store current category data
 
 // ========== LOAD CATEGORY PAGE ==========
 async function loadCategoryPage() {
@@ -22,6 +42,7 @@ async function loadCategoryPage() {
 
   // Load category info
   const category = await getCategory(categorySlug);
+  currentCategory = category; // Store in STATE
   console.log('Category data:', category);
 
   if (category) {
@@ -44,12 +65,52 @@ async function loadCategoryPage() {
 
   // Load all subcategories
   allSubcategories = await getAllSubcategories();
-  console.log('All subcategories:', allSubcategories);
-
-  if (allProducts && allProducts.length > 0) {
-    // Store all products
+  console.log('All subcategories:', allSubcategories.length);
+  
+  // Get all categories to map UUIDs to slugs
+  const allCategories = await getCategories();
+  console.log('All categories loaded:', allCategories.length);
+  
+  // Find the UUID of the current category
+  let currentCategoryUuid = null;
+  allCategories.forEach(cat => {
+    if (cat.slug === categorySlug || cat.full_slug === `categories/${categorySlug}`) {
+      currentCategoryUuid = cat.uuid;
+      console.log(`Found category UUID: ${currentCategoryUuid} for slug: ${categorySlug}`);
+    }
+  });
+  
+  if (allProducts && allProducts.length > 0 && currentCategoryUuid) {
+    // Filter products by category UUID
+    allCategoryProducts = allProducts.filter(product => {
+      const productCategoryUuid = product.content.category;
+      return productCategoryUuid === currentCategoryUuid;
+    });
+    
+    console.log('Products for category "' + categorySlug + '":', allCategoryProducts.length);
+    
+    // Filter subcategories - show only those that belong to this category
+    // Manual mapping because Storyblok doesn't have category relationship
+    const subcategoryMapping = {
+      'vicka': ['na-zavarovani', 'pro-vcelare'],
+      'plechovky': ['plechovky-na-zavarovani'],
+      'sklenice': ['twist-off']
+    };
+    
+    const allowedSlugs = subcategoryMapping[categorySlug] || [];
+    
+    allSubcategories = allSubcategories.filter(subcat => {
+      const isAllowed = allowedSlugs.includes(subcat.slug);
+      if (isAllowed) {
+        console.log(`✓ Subcat "${subcat.content.subcategory_name}" (${subcat.slug}) belongs to category "${categorySlug}"`);
+      }
+      return isAllowed;
+    });
+    
+    console.log('Filtered subcategories for category "' + categorySlug + '":', allSubcategories.length);
+  } else if (allProducts && allProducts.length > 0) {
+    console.log('Warning: currentCategoryUuid not found, showing all products');
     allCategoryProducts = allProducts;
-    console.log('Products for category:', allCategoryProducts.length);
   }
 
   // Render filter buttons if subcategories exist
@@ -78,6 +139,7 @@ async function loadCategoryPage() {
     // Add filter button listeners
     document.querySelectorAll('.filter-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
+        e.preventDefault();
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         selectedSubcategory = btn.dataset.subcat === 'all' ? null : btn.dataset.subcat;
@@ -109,20 +171,38 @@ function renderProductsPage() {
   let productsToDisplay = allCategoryProducts;
   
   if (selectedSubcategory) {
+    console.log('Filtering by subcategory:', selectedSubcategory);
     productsToDisplay = allCategoryProducts.filter(product => {
       const subcatRef = product.content.subcategory;
-      if (!subcatRef) return false;
+      
+      if (!subcatRef) {
+        console.log(`Product ${product.slug}: no subcategory`);
+        return false;
+      }
       
       // subcatRef could be array or single object
       const refs = Array.isArray(subcatRef) ? subcatRef : [subcatRef];
       
+      console.log(`Product ${product.slug}: refs =`, refs);
+      
       // Check if any ref matches selected subcategory
-      return refs.some(ref => {
+      const matches = refs.some(ref => {
         if (!ref) return false;
-        // ref.slug should be like "subcategories/na-zavarovali"
-        return ref.slug === selectedSubcategory || ref.slug === `subcategories/${selectedSubcategory}`;
+        
+        // Try different ways to match the slug
+        const refSlug = ref.slug || ref.full_slug || '';
+        console.log(`  - checking ref slug="${refSlug}" against "${selectedSubcategory}"`);
+        
+        // Match if slug ends with selected or equals selected
+        return refSlug.endsWith(selectedSubcategory) || 
+               refSlug === selectedSubcategory ||
+               refSlug === `subcategories/${selectedSubcategory}`;
       });
+      
+      return matches;
     });
+    
+    console.log('Filtered products:', productsToDisplay.length);
   }
 
   const totalPages = Math.ceil(productsToDisplay.length / PRODUCTS_PER_PAGE);
@@ -134,9 +214,15 @@ function renderProductsPage() {
   const productsGrid = document.getElementById('products-grid');
   if (pageProducts.length > 0) {
     productsGrid.innerHTML = pageProducts.map(product => {
-      const image = product.content.image && product.content.image.filename
-        ? product.content.image.filename
-        : 'images/product_placeholder.png';
+      // Handle both string URLs and image objects from Storyblok
+      let image = 'images/product_placeholder.png';
+      if (product.content.image) {
+        if (typeof product.content.image === 'string') {
+          image = product.content.image;
+        } else if (product.content.image.filename) {
+          image = product.content.image.filename;
+        }
+      }
       const prodName = product.content.name || 'Produkt';
       const prodDesc = product.content.description ?
         (typeof product.content.description === 'object' ?
@@ -156,7 +242,7 @@ function renderProductsPage() {
     productsGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Žádné produkty nenalezeny</p>';
   }
 
-  // Render pagination
+  // Render pagination only if more than 9 products
   renderPagination(totalPages);
 }
 
