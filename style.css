@@ -1581,3 +1581,147 @@ h3 {
     font-size: 1.5rem;
   }
 }
+
+/* ========== CATEGORY PAGE: FILTER BUTTONS ========== */
+.subcategories-filter-section {
+  padding: 2rem;
+  background-color: var(--card-bg);
+  margin-bottom: 2rem;
+}
+
+.subcategories-filter {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border: 2px solid var(--border-color);
+  background-color: transparent;
+  color: var(--text-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.filter-btn:hover {
+  border-color: var(--link-hover);
+  background-color: var(--card-bg);
+}
+
+.filter-btn.active {
+  background-color: var(--button-bg);
+  color: white;
+  border-color: var(--button-bg);
+}
+
+.filter-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.filter-btn i {
+  font-size: 1.1rem;
+}
+
+/* ========== PAGINATION ========== */
+.pagination-section {
+  padding: 2rem;
+  text-align: center;
+  background-color: var(--card-bg);
+  margin-top: 2rem;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pagination-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-color);
+  background-color: white;
+  color: var(--text-color);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.pagination-btn:hover {
+  background-color: var(--link-hover);
+  color: white;
+  border-color: var(--link-hover);
+}
+
+.pagination-btn.active {
+  background-color: var(--button-bg);
+  color: white;
+  border-color: var(--button-bg);
+}
+
+.pagination-btn.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  background-color: var(--card-bg);
+}
+
+.pagination-ellipsis {
+  padding: 0.5rem 0.25rem;
+  color: var(--text-color);
+}
+
+.dark .pagination-btn {
+  background-color: var(--nav-bg);
+  color: var(--text-color);
+  border-color: var(--text-color);
+}
+
+.dark .pagination-btn:hover {
+  background-color: var(--link-hover);
+  color: var(--bg-color);
+}
+
+/* Mobile responsiveness for filters */
+@media (max-width: 768px) {
+  .subcategories-filter-section {
+    padding: 1.5rem 1rem;
+  }
+
+  .subcategories-filter {
+    gap: 0.75rem;
+  }
+
+  .filter-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .filter-btn span {
+    display: none;
+  }
+
+  .filter-btn.active span {
+    display: inline;
+  }
+}

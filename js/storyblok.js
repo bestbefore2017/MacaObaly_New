@@ -192,6 +192,21 @@ export async function getCategory(categorySlug) {
   }
 }
 
+// FETCH ALL SUBCATEGORIES (from root subcategories folder)
+export async function getAllSubcategories() {
+  try {
+    const data = await storyblokApi.get('cdn/stories', {
+      version: 'draft',
+      starts_with: 'subcategories/',
+      per_page: 100
+    });
+    return data.stories;
+  } catch (error) {
+    console.error('Error fetching subcategories:', error);
+    return [];
+  }
+}
+
 // FETCH SINGLE SUBCATEGORY
 export async function getSubcategory(categorySlug, subcategorySlug) {
   try {
