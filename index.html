@@ -8,6 +8,7 @@
     <meta name="keywords" content="víčka, obaly, sklenice,tradiční, kvalitní produkty">
     <meta name="author" content="René Máca">
     <link rel="icon" href="https://maca-obaly.cz/wp-content/uploads/2023/11/cropped-obaly_web_icon-32x32.png" type="image/x-icon">
+    <link rel="canonical" href="https://maca-obaly.cz/">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,18 +28,16 @@
         <a href="index.html"><span class="site-title">MácaObaly.cz</span></a>
     </div>
     <ul class="nav-links">
-        <li><a href="#home">Domů</a></li>
-        <li><a href="#produkty">Produkty</a></li>
-        <li><a href="#o-nas">O nás</a></li>
-        <li><a href="#kontakt">Kontakt</a></li>
-
-   
-        <li><a href="tel:+420720670226" class="mobile-cta">+420 720 670 226</a></li>
-        <li><button id="theme-toggle-mobile" class="theme-toggle-mobile"><i class="fas fa-moon"></i></button></li>
+      <li><a href="#home">Domů</a></li>
+      <li><a href="#produkty">Produkty</a></li>
+      <li><a href="#o-nas">O nás</a></li>
+      <li><a href="#kontakt">Kontakt</a></li>
+      <li class="nav-menu-cta"><a href="tel:+420720670226" class="mobile-cta">+420 720 670 226</a></li>
+      <li class="nav-menu-theme"><button id="theme-toggle-mobile" class="theme-toggle-mobile" aria-label="Přepnout téma"><i class="fas fa-moon"></i></button></li>
     </ul>
     <div class="nav-links-right">
-    <a href="tel:+420720670226" class="cta-button">+420 720 670 226</a>
-    <button id="theme-toggle" class="theme-toggle"><i class="fas fa-moon"></i></button>
+    <a href="tel:+420720670226" class="desktop-cta">+420 720 670 226</a>
+    <button id="theme-toggle" class="theme-toggle" aria-label="Přepnout téma"><i class="fas fa-moon"></i></button>
 </div>
 </div>
 <div id="home" class="hero-section">
@@ -49,7 +48,7 @@
     </div>
     <div class="hero-image">
         <div class="hero-bg"></div>
-        <img id="hero-image" src="images/collage.png" alt="Víčka, obaly a sklenice">
+        <img id="hero-image" src="images/collage.png" alt="Víčka, obaly a sklenice" loading="lazy" decoding="async">
     </div>
 </div>
 <!-- Product Categories Section -->
@@ -69,7 +68,7 @@
       <div id="about-content"></div>
     </div>
     <div class="about-image">
-      <img id="about-image" src="images/maca_warehouse.jpg" alt="O naší firmě">
+      <img id="about-image" src="images/maca_warehouse.jpg" alt="O naší firmě" loading="lazy" decoding="async">
     </div>
   </div>
 </section>

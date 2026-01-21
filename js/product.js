@@ -80,7 +80,7 @@ async function loadProductPage() {
 
       return `
         <a href="product.html?slug=${product.slug}" class="product-item">
-          <img src="${image}" alt="${prodName}">
+          <img src="${image}" alt="${prodName}" loading="lazy" decoding="async" sizes="(max-width: 479px) 100vw, (max-width: 767px) 50vw, (max-width: 959px) 33vw, 33vw">
           <h3>${prodName}</h3>
           <p>${prodDesc}</p>
         </a>

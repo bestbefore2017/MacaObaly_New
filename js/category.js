@@ -126,7 +126,7 @@ async function loadCategoryPage() {
       </button>
       ${allSubcategories.map(sub => {
         const icon = sub.content.icon && sub.content.icon.filename 
-          ? `<img src="${sub.content.icon.filename}" alt="${sub.content.subcategory_name}" class="filter-icon">`
+          ? `<img src="${sub.content.icon.filename}" alt="${sub.content.subcategory_name}" class="filter-icon" loading="lazy" decoding="async">`
           : '<i class="fas fa-box"></i>';
         const subName = sub.content.subcategory_name || sub.name || sub.slug;
         return `
@@ -231,7 +231,7 @@ function renderProductsPage() {
 
       return `
         <a href="product.html?slug=${product.slug}" class="product-item">
-          <img src="${image}" alt="${prodName}">
+          <img src="${image}" alt="${prodName}" loading="lazy" decoding="async" sizes="(max-width: 479px) 100vw, (max-width: 767px) 50vw, (max-width: 959px) 33vw, 33vw">
           <h3>${prodName}</h3>
           <p>${prodDesc}</p>
         </a>

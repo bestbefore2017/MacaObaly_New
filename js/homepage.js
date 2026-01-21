@@ -101,7 +101,7 @@ async function loadHomePage() {
       const catName = cat.content.category_name || cat.name || cat.slug;
       return `
         <a href="category.html?slug=${cat.slug}" class="category-card">
-          <img src="${icon}" alt="${catName}">
+          <img src="${icon}" alt="${catName}" loading="lazy" decoding="async" sizes="(max-width: 479px) 100vw, (max-width: 767px) 50vw, (max-width: 959px) 33vw, 33vw">
           <h3>${catName}</h3>
         </a>
       `;
