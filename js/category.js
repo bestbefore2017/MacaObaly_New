@@ -35,14 +35,35 @@ async function loadCategoryPage() {
 
   console.log('Loading category with slug:', categorySlug);
 
+  // Load all products first (always needed)
+  const allProducts = await getAllProducts();
+  console.log('All products loaded:', allProducts.length);
+
+  // Load all subcategories (always needed)
+  allSubcategories = await getAllSubcategories();
+  console.log('All subcategories:', allSubcategories.length);
+  
+  // Get all categories
+  const allCategories = await getCategories();
+  console.log('All categories loaded:', allCategories.length);
+
+  // If no category slug, show first category or all products
   if (!categorySlug) {
-    console.error('No category slug provided');
-    return;
+    if (allCategories.length > 0) {
+      // Default to first category
+      const firstCategory = allCategories[0];
+      window.history.replaceState({}, '', `category.html?slug=${firstCategory.slug}`);
+      return loadCategoryPage();
+    } else {
+      console.error('No categories available');
+      document.getElementById('category-name').textContent = 'Kategorie nedostupná';
+      return;
+    }
   }
 
   // Load category info
   const category = await getCategory(categorySlug);
-  currentCategory = category; // Store in STATE
+  currentCategory = category;
   console.log('Category data:', category);
 
   if (category) {
@@ -57,20 +78,11 @@ async function loadCategoryPage() {
     } else {
       document.getElementById('category-description').textContent = description || '';
     }
+  } else {
+    console.warn(`Category with slug "${categorySlug}" not found`);
+    document.getElementById('category-name').textContent = 'Kategorie nenalezena';
   }
 
-  // Load all products
-  const allProducts = await getAllProducts();
-  console.log('All products loaded:', allProducts.length);
-
-  // Load all subcategories
-  allSubcategories = await getAllSubcategories();
-  console.log('All subcategories:', allSubcategories.length);
-  
-  // Get all categories to map UUIDs to slugs
-  const allCategories = await getCategories();
-  console.log('All categories loaded:', allCategories.length);
-  
   // Find the UUID of the current category
   let currentCategoryUuid = null;
   allCategories.forEach(cat => {
@@ -209,6 +221,8 @@ function renderProductsPage() {
 
   // Render products grid
   const productsGrid = document.getElementById('products-grid');
+  console.log(`🎬 Rendering ${pageProducts.length} products (Page ${currentPage}/${totalPages})`);
+  
   if (pageProducts.length > 0) {
     productsGrid.innerHTML = pageProducts.map(product => {
       // Handle both string URLs and image objects from Storyblok
@@ -329,7 +343,11 @@ function renderPagination(totalPages) {
 
 // ========== INITIALIZE ON PAGE LOAD ==========
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('📄 Category page loaded');
   initTheme();
   initScrollAnimation();
-  loadCategoryPage();
+  loadCategoryPage().catch(error => {
+    console.error('❌ Error loading category page:', error);
+    document.getElementById('category-name').textContent = 'Chyba při načítání kategorie';
+  });
 });

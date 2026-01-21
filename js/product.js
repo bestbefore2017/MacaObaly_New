@@ -6,13 +6,17 @@ async function loadProductPage() {
   const params = new URLSearchParams(window.location.search);
   const productSlug = params.get('slug');
 
+  console.log('📦 Loading product with slug:', productSlug);
+
   if (!productSlug) {
-    console.error('No product slug provided');
+    console.error('❌ No product slug provided');
     return;
   }
 
   // Load product
   const product = await getProduct(productSlug);
+  console.log('✅ Product loaded:', product);
+  
   if (product) {
     document.getElementById('product-name').textContent = product.name || 'Produkt';
     
@@ -38,6 +42,7 @@ async function loadProductPage() {
       if (subcatRef && subcatRef.slug) {
         const parts = subcatRef.slug.split('/');
         const categorySlug = parts[1] || parts[0];
+        console.log('📁 Setting back link to category:', categorySlug);
         document.getElementById('back-to-category').href = `category.html?slug=${categorySlug}`;
         document.getElementById('nav-back').href = `category.html?slug=${categorySlug}`;
       }
@@ -93,8 +98,52 @@ async function loadProductPage() {
 
 // ========== INITIALIZE ON PAGE LOAD ==========
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('📦 Product page loaded');
   initTheme();
   initScrollAnimation();
-  loadProductPage();
-  
+  loadProductPage().catch(error => {
+    console.error('❌ Error loading product:', error);
+  });
+  initProductNavigation().catch(error => {
+    console.error('❌ Error initializing product navigation:', error);
+  });
 });
+
+// ========== PRODUCT NAVIGATION ==========
+async function initProductNavigation() {
+  const params = new URLSearchParams(window.location.search);
+  const currentSlug = params.get('slug');
+  
+  if (!currentSlug) return;
+
+  // Get all products to find current product index
+  const allProducts = await getAllProducts();
+  const currentIndex = allProducts.findIndex(p => p.slug === currentSlug);
+  
+  if (currentIndex === -1) return;
+
+  const prevBtn = document.querySelector('.prev-product');
+  const nextBtn = document.querySelector('.next-product');
+
+  // Previous product
+  if (currentIndex > 0) {
+    const prevProduct = allProducts[currentIndex - 1];
+    prevBtn.href = `product.html?slug=${prevProduct.slug}`;
+    prevBtn.style.opacity = '1';
+    prevBtn.style.pointerEvents = 'auto';
+  } else {
+    prevBtn.style.opacity = '0.3';
+    prevBtn.style.pointerEvents = 'none';
+  }
+
+  // Next product
+  if (currentIndex < allProducts.length - 1) {
+    const nextProduct = allProducts[currentIndex + 1];
+    nextBtn.href = `product.html?slug=${nextProduct.slug}`;
+    nextBtn.style.opacity = '1';
+    nextBtn.style.pointerEvents = 'auto';
+  } else {
+    nextBtn.style.opacity = '0.3';
+    nextBtn.style.pointerEvents = 'none';
+  }
+}

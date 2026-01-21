@@ -39,9 +39,32 @@ export function initTheme() {
 /**
  * Initialize scroll animations
  * Homepage: parallax hero effect
- * Other pages: navigation opacity on scroll
+ * All pages: fade-in elements on scroll + navigation opacity
  */
 export function initScrollAnimation(isHomepage = false) {
+  // Observer for fade-in animations on scroll
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        // Add animation class to trigger fade-in
+        entry.target.style.animation = 'fadeInUp 0.6s ease-out forwards';
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  // Observe all product and category cards
+  const cardsToAnimate = document.querySelectorAll('.product-card, .category-card, .about-content, .contact-section');
+  cardsToAnimate.forEach(card => {
+    card.style.animation = 'none'; // Reset animation
+    observer.observe(card);
+  });
+
   window.addEventListener('scroll', () => {
     const scrolled = window.pageYOffset;
     const navigation = document.querySelector('.navigation');
