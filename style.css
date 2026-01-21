@@ -649,6 +649,13 @@ h3 {
   }
 }
 
+/* MD only: add padding for hamburger space */
+@media (min-width: 768px) and (max-width: 959px) {
+  .nav-links-right {
+    padding-right: 3.5rem;
+  }
+}
+
 /* Product Categories Section */
 .product-categories-section {
   padding: 4rem 2rem;
