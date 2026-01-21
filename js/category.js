@@ -89,22 +89,25 @@ async function loadCategoryPage() {
     
     console.log('Products for category "' + categorySlug + '":', allCategoryProducts.length);
     
-    // Filter subcategories - show only those that belong to this category
-    // Manual mapping because Storyblok doesn't have category relationship
-    const subcategoryMapping = {
-      'vicka': ['na-zavarovani', 'pro-vcelare'],
-      'plechovky': ['plechovky-na-zavarovani'],
-      'sklenice': ['twist-off']
-    };
-    
-    const allowedSlugs = subcategoryMapping[categorySlug] || [];
-    
-    allSubcategories = allSubcategories.filter(subcat => {
-      const isAllowed = allowedSlugs.includes(subcat.slug);
-      if (isAllowed) {
-        console.log(`✓ Subcat "${subcat.content.subcategory_name}" (${subcat.slug}) belongs to category "${categorySlug}"`);
+    // Filter subcategories - show only those that are actually used by products in this category
+    // Build a set of subcategory UUIDs used by products
+    const usedSubcategoryUuids = new Set();
+    allCategoryProducts.forEach(product => {
+      const subcatUuid = product.content.subcategory;
+      if (subcatUuid) {
+        usedSubcategoryUuids.add(subcatUuid);
       }
-      return isAllowed;
+    });
+    
+    console.log('Used subcategory UUIDs:', Array.from(usedSubcategoryUuids));
+    
+    // Filter subcategories to show only those used by products
+    allSubcategories = allSubcategories.filter(subcat => {
+      const isUsed = usedSubcategoryUuids.has(subcat.uuid);
+      if (isUsed) {
+        console.log(`✓ Subcat "${subcat.content.subcategory_name}" (${subcat.slug}) is used by products in category "${categorySlug}"`);
+      }
+      return isUsed;
     });
     
     console.log('Filtered subcategories for category "' + categorySlug + '":', allSubcategories.length);
@@ -218,11 +221,13 @@ function renderProductsPage() {
         }
       }
       const prodName = product.content.name || 'Produkt';
-      const prodDesc = product.content.description ?
-        (typeof product.content.description === 'object' ?
-          richtextToHtml(product.content.description).substring(0, 100) :
-          product.content.description.substring(0, 100)) + '...'
-        : 'Bez popisu';
+      let prodDesc = 'Bez popisu';
+      if (product.content.description) {
+        const fullDesc = typeof product.content.description === 'object' ?
+          richtextToHtml(product.content.description) :
+          product.content.description;
+        prodDesc = fullDesc.length > 100 ? fullDesc.substring(0, 100) + '...' : fullDesc;
+      }
 
       return `
         <a href="product.html?slug=${product.slug}" class="product-item">
@@ -243,10 +248,19 @@ function renderProductsPage() {
 // ========== RENDER PAGINATION ==========
 function renderPagination(totalPages) {
   const paginationContainer = document.getElementById('pagination');
+  const paginationSection = document.querySelector('.pagination-section');
   
   if (totalPages <= 1) {
     paginationContainer.innerHTML = '';
+    if (paginationSection) {
+      paginationSection.classList.remove('show');
+    }
     return;
+  }
+  
+  // Show section if pagination is needed
+  if (paginationSection) {
+    paginationSection.classList.add('show');
   }
 
   let paginationHTML = '';
