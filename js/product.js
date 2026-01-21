@@ -31,35 +31,21 @@ async function loadProductPage() {
       }
       document.getElementById('product-image').src = imageUrl;
     }
-  }
 
-  // Load all products for navigation
-  const allProducts = await getAllProducts();
-  const currentIndex = allProducts.findIndex(p => p.slug === productSlug);
-  
-  // Set back link to homepage products section
-  document.getElementById('back-to-category').href = 'index.html#produkty';
-  document.getElementById('nav-back').href = 'index.html#produkty';
-  
-  // Setup previous product link
-  const prevBtn = document.querySelector('.prev-product');
-  if (currentIndex > 0) {
-    prevBtn.href = `product.html?slug=${allProducts[currentIndex - 1].slug}`;
-  } else {
-    prevBtn.style.opacity = '0.5';
-    prevBtn.style.pointerEvents = 'none';
-  }
-  
-  // Setup next product link
-  const nextBtn = document.querySelector('.next-product');
-  if (currentIndex < allProducts.length - 1) {
-    nextBtn.href = `product.html?slug=${allProducts[currentIndex + 1].slug}`;
-  } else {
-    nextBtn.style.opacity = '0.5';
-    nextBtn.style.pointerEvents = 'none';
+    // Get category for back link
+    if (product.subcategory) {
+      const subcatRef = Array.isArray(product.subcategory) ? product.subcategory[0] : product.subcategory;
+      if (subcatRef && subcatRef.slug) {
+        const parts = subcatRef.slug.split('/');
+        const categorySlug = parts[1] || parts[0];
+        document.getElementById('back-to-category').href = `category.html?slug=${categorySlug}`;
+        document.getElementById('nav-back').href = `category.html?slug=${categorySlug}`;
+      }
+    }
   }
 
   // Load similar products (by subcategory)
+  const allProducts = await getAllProducts();
   const similarProducts = allProducts.filter(p => {
     if (p.slug === productSlug) return false;
     if (!product || !product.subcategory) return false;
@@ -67,7 +53,7 @@ async function loadProductPage() {
     const productSubcat = Array.isArray(product.subcategory) ? product.subcategory[0] : product.subcategory;
     const pSubcat = Array.isArray(p.content.subcategory) ? p.content.subcategory[0] : p.content.subcategory;
 
-    return productSubcat && pSubcat && productSubcat.uuid === pSubcat.uuid;
+    return productSubcat && pSubcat && productSubcat.slug === pSubcat.slug;
   }).slice(0, 6);
 
   const similarGrid = document.getElementById('similar-products');
