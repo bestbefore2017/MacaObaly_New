@@ -37,15 +37,23 @@ async function loadProductPage() {
     }
 
     // Get category for back link
-    if (product.subcategory) {
+    // Strategy: Try localStorage first (remember last visited category), fallback to subcategory
+    let categorySlug = localStorage.getItem('lastCategory');
+    console.log('💾 Retrieved lastCategory from localStorage:', categorySlug);
+    
+    if (!categorySlug && product.subcategory) {
+      // Fallback: Extract from subcategory slug (e.g., "vicka/twist-40-ml" -> "vicka")
       const subcatRef = Array.isArray(product.subcategory) ? product.subcategory[0] : product.subcategory;
       if (subcatRef && subcatRef.slug) {
-        const parts = subcatRef.slug.split('/');
-        const categorySlug = parts[1] || parts[0];
-        console.log('📁 Setting back link to category:', categorySlug);
-        document.getElementById('back-to-category').href = `category.html?slug=${categorySlug}`;
-        document.getElementById('nav-back').href = `category.html?slug=${categorySlug}`;
+        categorySlug = subcatRef.slug.split('/')[0];
+        console.log('📁 Extracted category from subcategory:', categorySlug);
       }
+    }
+    
+    if (categorySlug) {
+      console.log('🔗 Setting back link to category:', categorySlug);
+      document.getElementById('back-to-category').href = `category.html?slug=${categorySlug}`;
+      document.getElementById('nav-back').href = `category.html?slug=${categorySlug}`;
     }
   }
 

@@ -33,7 +33,13 @@ async function loadCategoryPage() {
   const params = new URLSearchParams(window.location.search);
   const categorySlug = params.get('slug');
 
-  console.log('Loading category with slug:', categorySlug);
+  console.log('📄 Category page loaded with slug:', categorySlug);
+
+  // Save current category to localStorage (for back link on product page)
+  if (categorySlug) {
+    localStorage.setItem('lastCategory', categorySlug);
+    console.log('💾 Saved lastCategory to localStorage:', categorySlug);
+  }
 
   // Load all products first (always needed)
   const allProducts = await getAllProducts();
