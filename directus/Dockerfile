@@ -1,10 +1,3 @@
-FROM node:18-alpine
-
-WORKDIR /directus
-
-# Instalovat npm přímo bez root package.json
-RUN npm install -g directus
+FROM directus/directus:latest
 
 EXPOSE 8055
-
-CMD ["directus", "start"]
