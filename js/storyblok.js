@@ -1,24 +1,24 @@
-// Initialize Storyblok API directly
+/**
+ * ⚠️ DEPRECATED: Storyblok API wrapper
+ * Teď je nahrazen Directus API (directus-api.js)
+ * Tento soubor zůstává pro kompatibilitu, ale už se nepoužívá.
+ */
+
+// Re-export z directus-api.js pro kompatibilitu
+import { 
+  getCategories as _getCategories,
+  getProducts as _getProducts,
+  getProductsByCategory as _getProductsByCategory,
+  getHomePage as _getHomePage,
+  getImageUrl,
+  richtextToHtml as _richtextToHtml
+} from './directus-api.js';
+
+// Proxy pro starý kód (forward na nový API)
 const storyblokApi = {
   get: async (path, params = {}) => {
-    const url = new URL(`https://api.storyblok.com/v1/${path}`);
-    url.searchParams.append('token', 'VdLWwVoZVAbmH4X3E93rhwtt');
-    
-    // Add query parameters
-    for (const [key, value] of Object.entries(params)) {
-      if (value !== undefined && value !== null) {
-        url.searchParams.append(key, value);
-      }
-    }
-    
-    try {
-      const response = await fetch(url.toString());
-      if (!response.ok) throw new Error(`API Error: ${response.status}`);
-      return await response.json();
-    } catch (error) {
-      console.error('Storyblok API Error:', error);
-      throw error;
-    }
+    console.warn('⚠️ Používáš starý storyblokApi - přejdi na directus-api.js');
+    throw new Error('Storyblok API již není dostupná, používej Directus API');
   }
 };
 

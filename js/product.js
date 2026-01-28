@@ -1,106 +1,77 @@
 import { initTheme, initScrollAnimation } from './shared.js';
-import { getProduct, getAllProducts, richtextToHtml } from './storyblok.js';
+import { getProducts, getImageUrl } from './directus-api.js';
 
 // ========== LOAD PRODUCT PAGE ==========
 async function loadProductPage() {
   const params = new URLSearchParams(window.location.search);
   const productSlug = params.get('slug');
 
-  console.log('📦 Loading product with slug:', productSlug);
+  console.log('📦 Načítám produkt:', productSlug);
 
   if (!productSlug) {
-    console.error('❌ No product slug provided');
+    console.error('❌ Žádný slug produktu');
     return;
   }
 
-  // Load product
-  const product = await getProduct(productSlug);
-  console.log('✅ Product loaded:', product);
+  // Načti všechny produkty z Directusu
+  const allProducts = await getProducts();
+  const product = allProducts.find(p => p.slug === productSlug);
+  
+  console.log('✅ Produkt načten z Directusu:', product);
   
   if (product) {
-    document.getElementById('product-name').textContent = product.name || 'Produkt';
+    document.getElementById('product-name').textContent = product.name;
+    document.getElementById('product-description').innerHTML = product.description || 'Bez popisu';
     
-    // Handle richtext description
-    const description = product.description;
-    if (typeof description === 'object') {
-      document.getElementById('product-description').innerHTML = richtextToHtml(description);
-    } else {
-      document.getElementById('product-description').innerHTML = description || 'Bez popisu';
+    if (product.price) {
+      document.getElementById('product-price').textContent = `${product.price} Kč`;
     }
 
     if (product.image) {
-      let imageUrl = product.image;
-      if (typeof product.image === 'object' && product.image.filename) {
-        imageUrl = product.image.filename;
-      }
-      document.getElementById('product-image').src = imageUrl;
+      document.getElementById('product-image').src = getImageUrl(product.image);
     }
 
-    // Get category for back link
-    // Strategy: Try localStorage first (remember last visited category), fallback to subcategory
+    // Back link k kategorii
     let categorySlug = localStorage.getItem('lastCategory');
-    console.log('💾 Retrieved lastCategory from localStorage:', categorySlug);
+    console.log('💾 Poslední kategorie:', categorySlug);
     
-    if (!categorySlug && product.subcategory) {
-      // Fallback: Extract from subcategory slug (e.g., "vicka/twist-40-ml" -> "vicka")
-      const subcatRef = Array.isArray(product.subcategory) ? product.subcategory[0] : product.subcategory;
-      if (subcatRef && subcatRef.slug) {
-        categorySlug = subcatRef.slug.split('/')[0];
-        console.log('📁 Extracted category from subcategory:', categorySlug);
-      }
+    if (!categorySlug && product.category) {
+      categorySlug = product.category.slug;
     }
     
     if (categorySlug) {
-      console.log('🔗 Setting back link to category:', categorySlug);
       document.getElementById('back-to-category').href = `category.html?slug=${categorySlug}`;
       document.getElementById('nav-back').href = `category.html?slug=${categorySlug}`;
     }
   }
 
-  // Load similar products (by subcategory)
-  const allProducts = await getAllProducts();
-  const similarProducts = allProducts.filter(p => {
-    if (p.slug === productSlug) return false;
-    if (!product || !product.subcategory) return false;
+  // Načti podobné produkty (ze stejné kategorie)
+  if (product && product.category) {
+    const allProducts = await getProducts();
+    const similarProducts = allProducts.filter(p => 
+      p.slug !== productSlug && 
+      p.category === product.category
+    ).slice(0, 6);
 
-    const productSubcat = Array.isArray(product.subcategory) ? product.subcategory[0] : product.subcategory;
-    const pSubcat = Array.isArray(p.content.subcategory) ? p.content.subcategory[0] : p.content.subcategory;
+    const similarGrid = document.getElementById('similar-products');
+    if (similarProducts.length > 0) {
+      similarGrid.innerHTML = similarProducts.map(p => {
+        const imageUrl = p.image ? getImageUrl(p.image) : 'images/product_placeholder.png';
+        const prodDesc = p.description ? 
+          (p.description.length > 50 ? p.description.substring(0, 50) + '...' : p.description) 
+          : '';
 
-    return productSubcat && pSubcat && productSubcat.slug === pSubcat.slug;
-  }).slice(0, 6);
-
-  const similarGrid = document.getElementById('similar-products');
-  if (similarProducts.length > 0) {
-    similarGrid.innerHTML = similarProducts.map(product => {
-      let image = 'images/product_placeholder.png';
-      if (product.content.image) {
-        if (typeof product.content.image === 'string') {
-          image = product.content.image;
-        } else if (product.content.image.filename) {
-          image = product.content.image.filename;
-        }
-      }
-      const prodName = product.content.name || 'Produkt';
-      
-      // Handle richtext description
-      let prodDesc = '';
-      if (product.content.description) {
-        const fullDesc = typeof product.content.description === 'object' ?
-          richtextToHtml(product.content.description) :
-          product.content.description;
-        prodDesc = fullDesc.length > 50 ? fullDesc.substring(0, 50) + '...' : fullDesc;
-      }
-
-      return `
-        <a href="product.html?slug=${product.slug}" class="product-item">
-          <img src="${image}" alt="${prodName}" loading="lazy" decoding="async" sizes="(max-width: 479px) 100vw, (max-width: 767px) 50vw, (max-width: 959px) 33vw, 33vw">
-          <h3>${prodName}</h3>
-          <p>${prodDesc}</p>
-        </a>
-      `;
-    }).join('');
-  } else {
-    similarGrid.innerHTML = '<p>Žádné podobné produkty nenalezeny</p>';
+        return `
+          <a href="product.html?slug=${p.slug}" class="product-item">
+            <img src="${imageUrl}" alt="${p.name}" loading="lazy" decoding="async" sizes="(max-width: 479px) 100vw, (max-width: 767px) 50vw, (max-width: 959px) 33vw, 33vw">
+            <h3>${p.name}</h3>
+            <p>${prodDesc}</p>
+          </a>
+        `;
+      }).join('');
+    } else {
+      similarGrid.innerHTML = '<p>Žádné podobné produkty nenalezeny</p>';
+    }
   }
 }
 
@@ -124,8 +95,8 @@ async function initProductNavigation() {
   
   if (!currentSlug) return;
 
-  // Get all products to find current product index
-  const allProducts = await getAllProducts();
+  // Načti všechny produkty
+  const allProducts = await getProducts();
   const currentIndex = allProducts.findIndex(p => p.slug === currentSlug);
   
   if (currentIndex === -1) return;
@@ -133,7 +104,7 @@ async function initProductNavigation() {
   const prevBtn = document.querySelector('.prev-product');
   const nextBtn = document.querySelector('.next-product');
 
-  // Previous product
+  // Předchozí produkt
   if (currentIndex > 0) {
     const prevProduct = allProducts[currentIndex - 1];
     prevBtn.href = `product.html?slug=${prevProduct.slug}`;
@@ -144,7 +115,7 @@ async function initProductNavigation() {
     prevBtn.style.pointerEvents = 'none';
   }
 
-  // Next product
+  // Další produkt
   if (currentIndex < allProducts.length - 1) {
     const nextProduct = allProducts[currentIndex + 1];
     nextBtn.href = `product.html?slug=${nextProduct.slug}`;

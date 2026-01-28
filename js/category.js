@@ -1,24 +1,5 @@
 import { initTheme, initScrollAnimation } from './shared.js';
-import { getCategory, getAllSubcategories, getAllProducts, richtextToHtml } from './storyblok.js';
-
-// Helper to fetch categories
-async function getCategories() {
-  try {
-    const url = new URL('https://api.storyblok.com/v1/cdn/stories');
-    url.searchParams.append('token', 'VdLWwVoZVAbmH4X3E93rhwtt');
-    url.searchParams.append('version', 'draft');
-    url.searchParams.append('starts_with', 'categories/');
-    url.searchParams.append('per_page', '100');
-    
-    const response = await fetch(url.toString());
-    if (!response.ok) throw new Error(`API Error: ${response.status}`);
-    const data = await response.json();
-    return data.stories || [];
-  } catch (error) {
-    console.error('Error fetching categories:', error);
-    return [];
-  }
-}
+import { getCategories, getProducts, getProductsByCategory, getImageUrl } from './directus-api.js';
 
 // ========== STATE ==========
 let allCategoryProducts = [];
@@ -35,88 +16,46 @@ async function loadCategoryPage() {
 
   console.log('📄 Category page loaded with slug:', categorySlug);
 
-  // Save current category to localStorage (for back link on product page)
   if (categorySlug) {
     localStorage.setItem('lastCategory', categorySlug);
-    console.log('💾 Saved lastCategory to localStorage:', categorySlug);
   }
 
-  // Load all products first (always needed)
-  const allProducts = await getAllProducts();
-  console.log('All products loaded:', allProducts.length);
-
-  // Load all subcategories (always needed)
-  allSubcategories = await getAllSubcategories();
-  console.log('All subcategories:', allSubcategories.length);
-  
-  // Get all categories
+  // Načti všechny kategorie a produkty z Directusu
   const allCategories = await getCategories();
-  console.log('All categories loaded:', allCategories.length);
+  const allProducts = await getProducts();
+  
+  console.log('✅ Kategorie z Directusu:', allCategories.length);
+  console.log('✅ Produkty z Directusu:', allProducts.length);
 
-  // If no category slug, show first category or all products
   if (!categorySlug) {
     if (allCategories.length > 0) {
-      // Default to first category
-      const firstCategory = allCategories[0];
-      window.history.replaceState({}, '', `category.html?slug=${firstCategory.slug}`);
+      window.history.replaceState({}, '', `category.html?slug=${allCategories[0].slug}`);
       return loadCategoryPage();
     } else {
-      console.error('No categories available');
       document.getElementById('category-name').textContent = 'Kategorie nedostupná';
       return;
     }
   }
 
-  // Load category info
-  const category = await getCategory(categorySlug);
+  // Najdi aktuální kategorii
+  const category = allCategories.find(c => c.slug === categorySlug);
   currentCategory = category;
-  console.log('Category data:', category);
-
+  
   if (category) {
-    const catName = category.category_name || 'Kategorie';
-    document.getElementById('category-name').textContent = catName;
-    document.title = `${catName} - MácaObaly.cz`;
-
-    // Handle description - could be richtext or string
-    const description = category.description;
-    if (typeof description === 'object') {
-      document.getElementById('category-description').innerHTML = richtextToHtml(description);
-    } else {
-      document.getElementById('category-description').textContent = description || '';
-    }
+    document.getElementById('category-name').textContent = category.name;
+    document.title = `${category.name} - MácaObaly.cz`;
+    document.getElementById('category-description').textContent = category.description || '';
   } else {
-    console.warn(`Category with slug "${categorySlug}" not found`);
+    console.warn(`Category "${categorySlug}" not found`);
     document.getElementById('category-name').textContent = 'Kategorie nenalezena';
   }
 
-  // Find the UUID of the current category
-  let currentCategoryUuid = null;
-  allCategories.forEach(cat => {
-    if (cat.slug === categorySlug || cat.full_slug === `categories/${categorySlug}`) {
-      currentCategoryUuid = cat.uuid;
-      console.log(`Found category UUID: ${currentCategoryUuid} for slug: ${categorySlug}`);
-    }
-  });
+  // Filtruj produkty pro tuto kategorii
+  if (category) {
+    allCategoryProducts = allProducts.filter(p => p.category === category.id);
+    console.log(`✅ ${allCategoryProducts.length} produktů v kategorii "${categorySlug}"`);
+  }
   
-  if (allProducts && allProducts.length > 0 && currentCategoryUuid) {
-    // Filter products by category UUID
-    allCategoryProducts = allProducts.filter(product => {
-      const productCategoryUuid = product.content.category;
-      return productCategoryUuid === currentCategoryUuid;
-    });
-    
-    console.log('Products for category "' + categorySlug + '":', allCategoryProducts.length);
-    
-    // Filter subcategories - show only those that are actually used by products in this category
-    // Build a set of subcategory UUIDs used by products
-    const usedSubcategoryUuids = new Set();
-    allCategoryProducts.forEach(product => {
-      const subcatUuid = product.content.subcategory;
-      if (subcatUuid) {
-        usedSubcategoryUuids.add(subcatUuid);
-      }
-    });
-    
     console.log('Used subcategory UUIDs:', Array.from(usedSubcategoryUuids));
     
     // Filter subcategories to show only those used by products
@@ -169,57 +108,13 @@ async function loadCategoryPage() {
       });
     });
 
-    // Show filter section
-    const filterSection = document.querySelector('.subcategories-filter-section');
-    if (filterSection) {
-      filterSection.style.display = 'block';
-    }
-  } else {
-    // Hide filter section if no subcategories
-    const filterSection = document.querySelector('.subcategories-filter-section');
-    if (filterSection) {
-      filterSection.style.display = 'none';
-    }
-  }
-
   // Render first page
   renderProductsPage();
 }
 
 // ========== RENDER PRODUCTS WITH PAGINATION ==========
 function renderProductsPage() {
-  // Filter by selected subcategory if any
-  let productsToDisplay = allCategoryProducts;
-  
-  if (selectedSubcategory) {
-    console.log('Filtering by subcategory slug:', selectedSubcategory);
-    
-    // Find the UUID of the selected subcategory
-    const selectedSubcat = allSubcategories.find(sub => sub.slug === selectedSubcategory);
-    const selectedSubcatUuid = selectedSubcat?.uuid;
-    
-    console.log('Selected subcat UUID:', selectedSubcatUuid);
-    
-    productsToDisplay = allCategoryProducts.filter(product => {
-      const productSubcategoryUuid = product.content.subcategory;
-      
-      if (!productSubcategoryUuid) {
-        console.log(`Product ${product.slug}: no subcategory UUID`);
-        return false;
-      }
-      
-      const matches = productSubcategoryUuid === selectedSubcatUuid;
-      
-      if (matches) {
-        console.log(`Product ${product.slug} matches subcategory ${selectedSubcategory}`);
-      }
-      
-      return matches;
-    });
-    
-    console.log('Filtered products:', productsToDisplay.length);
-  }
-
+  const productsToDisplay = allCategoryProducts;
   const totalPages = Math.ceil(productsToDisplay.length / PRODUCTS_PER_PAGE);
   const startIdx = (currentPage - 1) * PRODUCTS_PER_PAGE;
   const endIdx = startIdx + PRODUCTS_PER_PAGE;
@@ -227,32 +122,19 @@ function renderProductsPage() {
 
   // Render products grid
   const productsGrid = document.getElementById('products-grid');
-  console.log(`🎬 Rendering ${pageProducts.length} products (Page ${currentPage}/${totalPages})`);
+  console.log(`🎬 Rendering ${pageProducts.length} produktů (Stránka ${currentPage}/${totalPages})`);
   
   if (pageProducts.length > 0) {
     productsGrid.innerHTML = pageProducts.map(product => {
-      // Handle both string URLs and image objects from Storyblok
-      let image = 'images/product_placeholder.png';
-      if (product.content.image) {
-        if (typeof product.content.image === 'string') {
-          image = product.content.image;
-        } else if (product.content.image.filename) {
-          image = product.content.image.filename;
-        }
-      }
-      const prodName = product.content.name || 'Produkt';
-      let prodDesc = 'Bez popisu';
-      if (product.content.description) {
-        const fullDesc = typeof product.content.description === 'object' ?
-          richtextToHtml(product.content.description) :
-          product.content.description;
-        prodDesc = fullDesc.length > 100 ? fullDesc.substring(0, 100) + '...' : fullDesc;
-      }
+      const imageUrl = product.image ? getImageUrl(product.image) : 'images/product_placeholder.png';
+      const prodDesc = product.description ? 
+        (product.description.length > 100 ? product.description.substring(0, 100) + '...' : product.description) 
+        : 'Bez popisu';
 
       return `
         <a href="product.html?slug=${product.slug}" class="product-item">
-          <img src="${image}" alt="${prodName}" loading="lazy" decoding="async" sizes="(max-width: 479px) 100vw, (max-width: 767px) 50vw, (max-width: 959px) 33vw, 33vw">
-          <h3>${prodName}</h3>
+          <img src="${imageUrl}" alt="${product.name}" loading="lazy" decoding="async" sizes="(max-width: 479px) 100vw, (max-width: 767px) 50vw, (max-width: 959px) 33vw, 33vw">
+          <h3>${product.name}</h3>
           <p>${prodDesc}</p>
         </a>
       `;
